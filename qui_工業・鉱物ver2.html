@@ -1,0 +1,733 @@
+﻿<!DOCTYPE html>
+<htmllang="ja" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+　　<meta charset="UFT-8" />
+    <title>鉱物・エネルギー資源上位国クイズ</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+        }
+        .quiz-section {
+            margin-bottom: 40px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .quiz-section h2 {
+            margin-bottom: 10px;
+        }
+        /* 画像のスタイルとホバー効果の修正 */
+        .quiz-section img {
+            width: 100%;
+            height: auto; /* 高さを自動調整 */
+            object-fit: contain; /* 画像全体を表示 */
+            max-height: 200px; /* サイズを小さく調整 */
+            margin-bottom: 20px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            display: none; /* 初期状態で非表示 */
+        }
+        .quiz-section img:hover {
+            transform: scale(1.05);
+        }
+        .blanks {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+        .blank {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            position: relative; /* 正解表示用の位置調整 */
+        }
+        .blank span.rank-number {
+            width: 30px;
+            font-weight: bold;
+        }
+        .blank span.percentage {
+            margin-left: 10px;
+            color: #555;
+            font-size: 14px;
+        }
+        .drop-zone {
+            flex: 1;
+            min-height: 30px;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+            margin-left: 10px;
+            padding: 5px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s, border-color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .drop-zone.filled {
+            border: 2px solid #4CAF50;
+            background-color: #e8f5e9;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 8px 12px;
+            background-color: #2196F3;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: #1976D2;
+        }
+        .option.selected {
+            background-color: #FF9800;
+        }
+        .buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .buttons button {
+            padding: 8px 16px;
+            margin: 0 5px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .buttons button#check-answer {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+        .buttons button#check-answer:hover {
+            background-color: #45A049;
+        }
+        .buttons button#reset {
+            background-color: #f44336;
+            color: #fff;
+        }
+        .buttons button#reset:hover {
+            background-color: #d32f2f;
+        }
+        .result {
+            text-align: center;
+            font-size: 16px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .additional-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-left: 4px solid #2196F3;
+            border-radius: 4px;
+            display: none;
+        }
+        .additional-info h3 {
+            margin-top: 0;
+        }
+        /* 正解表示用のスタイル */
+        .correct-answer {
+            margin-left: 10px;
+            color: #d32f2f; /* 赤色 */
+            font-size: 14px;
+            font-style: italic;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>鉱物・エネルギー資源上位国クイズ</h1>
+
+    <div id="quiz-container">
+        <!-- Quiz sections will be inserted here -->
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        const quizData = [
+            {
+                product: '主要な石炭生産国',
+                image: 'https://media.discordapp.net/attachments/750020958844092539/1314232661941948548/IMG_5025.webp?ex=6753060b&is=6751b48b&hm=9d3476e0624715d6a22f3c5318e31318ed118e4d1c750c021c5a9834e5737cde&=&format=webp&width=720&height=432', // 石炭に関連する画像のURLを追加
+                countries: [
+                    { name: '中国' },
+                    { name: 'インド' },
+                    { name: 'インドネシア' },
+                    { name: 'アメリカ合衆国' },
+                    { name: 'オーストラリア' },
+                    { name: 'ロシア' },
+                    { name: '南アフリカ共和国' },
+                    { name: 'カザフスタン' },
+                    { name: 'ポーランド' }
+                ],
+                info: {
+                    生産量: '中国は巨大な産業基盤と急速な経済成長により、世界最大の石炭生産国となっています。インドも同様に大規模な人口と産業需要が石炭生産を支えています。インドネシアは豊富な石炭資源を有し、輸出にも力を入れています。アメリカはかつては主要な石炭生産国でしたが、近年は環境規制の強化や他のエネルギー源へのシフトにより生産量が減少傾向にあります。オーストラリアは高品質な石炭を大量に輸出し、世界市場で重要な役割を果たしています。ロシア、南アフリカ共和国、カザフスタン、ポーランドも国内需要と資源を背景に生産を続けています。',
+                    使用用途: '石炭は主に発電所での電力生産や鉄鋼業でのコークス製造に使用されています。産業用途が多岐にわたるため、これらの国々では石炭の需要が高いです。'
+                }
+            },
+            {
+                product: '主要な石炭輸出国',
+                image: 'https://example.com/images/coal_export.jpg', // 石炭輸出に関連する画像のURLを追加
+                countries: [
+                    { name: 'インドネシア' },
+                    { name: 'オーストラリア' },
+                    { name: 'ロシア' },
+                    { name: 'コロンビア' },
+                    { name: '南アフリカ共和国' }
+                ],
+                info: {
+                    輸出先: 'インドネシアとオーストラリアは世界有数の石炭輸出国であり、主に中国や日本、韓国などのエネルギー需要の高い国々に輸出しています。ロシアやコロンビア、南アフリカ共和国も国際市場でのシェアを持ち、石炭の輸出を行っています。',
+                    輸出量: 'これらの国々は高品質な石炭を大量に生産し、国際市場で競争力を持っています。特にインドネシアとオーストラリアはその輸出量と品質で世界市場をリードしています。'
+                }
+            },
+            {
+                product: '主要な原油生産国',
+                image: 'https://media.discordapp.net/attachments/750020958844092539/1314232662302654474/IMG_5024.webp?ex=6753060b&is=6751b48b&hm=afdad50ebd24c7ea8c7665567c11fea585ace15571e5e739ceb29d8fe64a854a&=&format=webp&width=720&height=432', // 原油生産に関連する画像のURLを追加
+                countries: [
+                    { name: 'アメリカ合衆国' },
+                    { name: 'サウジアラビア' },
+                    { name: 'ロシア' },
+                    { name: 'カナダ' },
+                    { name: 'イラク' },
+                    { name: '中国' },
+                    { name: 'アラブ首長国連邦' },
+                    { name: 'イラン' },
+                    { name: 'ブラジル' },
+                    { name: 'クウェート' }
+                ],
+                info: {
+                    生産技術: 'アメリカはシェールオイルの技術革新により原油生産量を大幅に増加させました。サウジアラビアは巨大な原油埋蔵量と効率的な生産体制を持ち、世界の原油市場において重要なプレイヤーです。ロシアも広大な資源と高度な採掘技術で生産量を維持しています。カナダはタールサンド技術を駆使し、イラクは政治的安定が生産に影響を与えています。中国は国内需要の増加に伴い生産を拡大し、アラブ首長国連邦やイランも中東地域の主要生産国として存在感を示しています。ブラジルやクウェートも持続的な生産を行っています。',
+                    国際関係: '原油生産国間の政治的な関係や経済的な依存度が原油市場に大きな影響を与えています。OPEC（石油輸出国機構）を中心とした生産調整や国際的なエネルギー政策が生産国の戦略に影響を及ぼしています。'
+                }
+            },
+            {
+                product: '主要な原油輸出国',
+                image: 'https://example.com/images/oil_export.jpg', // 原油輸出に関連する画像のURLを追加
+                countries: [
+                    { name: 'サウジアラビア' },
+                    { name: 'ロシア' },
+                    { name: 'イラク' },
+                    { name: 'アメリカ合衆国' },
+                    { name: 'カナダ' },
+                    { name: 'アラブ首長国連邦' },
+                    { name: 'クウェート' },
+                    { name: 'ノルウェー' },
+                    { name: 'ナイジェリア' },
+                    { name: 'ブラジル' }
+                ],
+                info: {
+                    市場シェア: 'サウジアラビアは世界最大の原油輸出国であり、国際市場において強い影響力を持っています。ロシアはEUやアジアへの輸出を強化しており、イラクも中東地域での生産を維持しています。アメリカはシェールオイルの増産により輸出が拡大しましたが、国内需要も高いためバランスが重要です。カナダやアラブ首長国連邦、クウェート、ノルウェーも安定した輸出を行っており、ナイジェリアやブラジルも地域的に重要な輸出国です。',
+                    輸出戦略: '各国は地政学的な要因や市場の需要に応じて輸出戦略を展開しています。特にサウジアラビアはOPECとの連携を強化し、市場の安定を図っています。ロシアはEUや中国との関係を深めることで輸出先を多様化しています。'
+                }
+            },
+            {
+                product: '主要な天然ガス生産国',
+                image: 'https://example.com/images/natural_gas.jpg', // 天然ガスに関連する画像のURLを追加
+                countries: [
+                    { name: 'アメリカ合衆国' },
+                    { name: 'ロシア' },
+                    { name: 'イラン' },
+                    { name: '中国' },
+                    { name: 'カナダ' },
+                    { name: 'カタール' }
+                ],
+                info: {
+                    生産量: 'アメリカ合衆国はシェールガス革命により天然ガスの生産量を大幅に増加させ、世界最大の天然ガス生産国となっています。ロシアは広大な天然ガス資源を有し、ヨーロッパおよびアジア市場への輸出を行っています。イランは中東地域で豊富な天然ガスを有し、国内需要を満たすとともに輸出も行っています。中国は急速な経済成長に伴い、天然ガスの需要が急増しており、生産も拡大しています。カナダは天然ガスの生産と輸出において重要な役割を果たしており、特に北米市場に対する供給が盛んです。カタールは世界有数の液化天然ガス（LNG）輸出国として知られ、国際市場でのシェアを拡大しています。',
+                    使用用途: '天然ガスは発電、暖房、産業用エネルギーとして広く使用されています。また、化学工業の原料としても重要な役割を果たしています。'
+                }
+            },
+            {
+                product: '主要な原油輸入国',
+                image: 'https://example.com/images/oil_import.jpg', // 原油輸入に関連する画像のURLを追加
+                countries: [
+                    { name: '中国' },
+                    { name: 'アメリカ合衆国' },
+                    { name: 'インド' },
+                    { name: '韓国' },
+                    { name: '日本' },
+                    { name: 'ドイツ' },
+                    { name: 'スペイン' },
+                    { name: 'イタリア' }
+                ],
+                info: {
+                    需要動向: '中国は急速な経済成長と工業化に伴い、原油の需要が爆発的に増加しています。アメリカは国内生産も増加していますが、輸入も依然として重要です。インドも人口増加と経済発展によりエネルギー需要が高まっています。韓国や日本は製造業が発展しており、安定した原油需要を持っています。ドイツ、スペイン、イタリアも工業国としての需要が高く、エネルギー政策においても原油の依存度を管理しています。',
+                    エネルギー政策: '多くの輸入国はエネルギーの多様化や再生可能エネルギーの導入を進めており、原油依存度を減らすための政策を展開しています。これにより、原油の需要構造が変化しつつあります。'
+                }
+            },
+            {
+                product: '鉄鉱石の生産統計',
+                image: 'https://media.discordapp.net/attachments/750020958844092539/1314206970596687882/IMG_5017.webp?ex=6752ee1e&is=67519c9e&hm=b42bcbe5c8ad44de3ef34ebb85a5a6d97e53aac81705930e1da271e20f5c45c5&=&format=webp&width=720&height=432', // 鉄鉱石に関連する画像のURLを追加
+                countries: [
+                    { name: 'オーストラリア', percentage: '37.1%' },
+                    { name: 'ブラジル', percentage: '16.2%' },
+                    { name: '中国', percentage: '14.8%' }
+                ],
+                info: {
+                    市場影響: 'オーストラリアは高品質な鉄鉱石を大量に生産し、中国などの鉄鋼生産国に輸出しています。ブラジルも豊富な鉄鉱石資源を有し、グローバル市場で重要な役割を果たしています。中国は国内需要が高いため、輸入量も増加しています。',
+                    採掘地域: 'オーストラリアの西オーストラリア州やブラジルのミナスジェライス州、中国の内モンゴル自治区などが主要な採掘地域です。これらの地域は豊富な資源と高度な採掘技術を備えています。'
+                }
+            },
+            {
+                product: '銅鉱の生産統計',
+                image: 'https://media.discordapp.net/attachments/750020958844092539/1314206970949140490/IMG_5018.webp?ex=6752ee1e&is=67519c9e&hm=1ef81d4b72eff045de5f642bbd8f619578cf981ecc72034843b91487511bd315&=&format=webp&width=720&height=432', // 銅鉱に関連する画像のURLを追加
+                countries: [
+                    { name: 'チリ', percentage: '28.4%' },
+                    { name: 'ペルー', percentage: '12%' },
+                    { name: '中国', percentage: '8.3%' }
+                ],
+                info: {
+                    産業用途: '銅鉱は電気製品や建設資材、輸送機器など多岐にわたる産業で使用されます。チリは世界最大の銅生産国として、世界中の産業に供給しています。ペルーも高品質な銅鉱石を提供し、世界市場でのシェアを拡大しています。中国は国内需要が高いため、製造業を支えるための銅鉱生産を行っています。',
+                    環境影響: '銅の採掘には環境への影響が伴いますが、これらの国々では持続可能な採掘方法や環境保護の取り組みが進められています。'
+                }
+            },
+            {
+                product: 'ボーキサイトの生産統計',
+                image: 'https://media.discordapp.net/attachments/750020958844092539/1314206971372769310/IMG_5019.webp?ex=6752ee1e&is=67519c9e&hm=1209d77688c4f1134b938f91fe378caa4774187fece10227f1e433262db9ea37&=&format=webp&width=720&height=432', // ボーキサイトに関連する画像のURLを追加
+                countries: [
+                    { name: 'オーストラリア', percentage: '26.7%' },
+                    { name: '中国', percentage: '23.7%' },
+                    { name: 'ギニア', percentage: '22%' }
+                ],
+                info: {
+                    アルミニウム生産: 'ボーキサイトはアルミニウム製造の原料として不可欠です。オーストラリアは豊富なボーキサイト資源を有し、世界のアルミニウム生産を支えています。中国も国内需要が高く、ボーキサイトの生産を拡大しています。ギニアは高品質なボーキサイトを生産し、輸出によって経済成長を図っています。',
+                    供給チェーン: 'ボーキサイトの採掘から精錬、アルミニウム製造までの供給チェーンが整備されており、主要な生産国は高度なインフラと技術を備えています。'
+                }
+            },
+            {
+                product: 'すず鉱の生産統計',
+                image: 'https://media.discordapp.net/attachments/750020958844092539/1314206971620098098/IMG_5020.webp?ex=6752ee1e&is=67519c9e&hm=5e51721dd3cd49744c93554c6eccd9e02dda16feacfc63c374c53cb13ee920ea&=&format=webp&width=720&height=432', // すず鉱に関連する画像のURLを追加
+                countries: [
+                    { name: '中国', percentage: '31.8%' },
+                    { name: 'インドネシア', percentage: '20.1%' },
+                    { name: 'ミャンマー' }
+                ],
+                info: {
+                    使用用途: 'すず鉱は主にブロンズやはんだの製造、電気電子部品の製造に使用されます。中国は世界最大のすず生産国として、国内外の需要を満たしています。インドネシアも豊富なすず資源を活用し、製造業を支えています。ミャンマーは発展途上国ながら、資源豊富な地域としてすず鉱の生産を拡大しています。',
+                    国際貿易: 'すず鉱の輸出は国際市場で重要な役割を果たしており、主要生産国は価格競争力を持っています。'
+                }
+            },
+            {
+                product: '金鉱の生産統計',
+                image: 'https://media.discordapp.net/attachments/750020958844092539/1314206971930607626/IMG_5021.webp?ex=6752ee1e&is=67519c9e&hm=9c54b003d2399b65abac1f0e477487bd0d4e07b59d30d524f6343c1a830f5cae&=&format=webp&width=720&height=432', // 金鉱に関連する画像のURLを追加
+                countries: [
+                    { name: '中国', percentage: '10.6%' },
+                    { name: 'ロシア', percentage: '10.3%' },
+                    { name: 'オーストラリア', percentage: '10.2%' }
+                ],
+                info: {
+                    投資需要: '金は安全資産としての投資需要が高く、これが生産国の生産量に影響を与えています。中国は文化的にも金に対する需要が高く、生産量を維持しています。ロシアは国家戦略として金の生産を強化し、経済的な安定を図っています。オーストラリアも高品質な金鉱石を供給し、世界市場でのシェアを保持しています。',
+                    採掘技術: '先進的な採掘技術と効率的な生産体制により、主要生産国は持続的な生産を実現しています。'
+                }
+            },
+            {
+                product: '銀鉱の生産統計',
+                image: 'https://example.com/images/silver.jpg', // 銀鉱に関連する画像のURLを追加
+                countries: [
+                    { name: 'メキシコ', percentage: '23.4%' },
+                    { name: '中国', percentage: '14.3%' },
+                    { name: 'ペルー', percentage: '11.7%' }
+                ],
+                info: {
+                    産業用途: '銀は電気導体としての特性が高く、電子機器や太陽光パネルの製造に広く使用されています。メキシコは世界有数の銀生産国として、国内外の産業需要を満たしています。中国も電子産業の発展に伴い、銀の生産を増加させています。ペルーは高品質な銀鉱石を生産し、グローバル市場でのシェアを拡大しています。',
+                    市場価格: '銀の市場価格は産業需要や投資需要により変動しますが、主要生産国は安定した供給を通じて市場に影響を与えています。'
+                }
+            },
+            {
+                product: 'ダイヤモンドの生産統計',
+                image: 'https://example.com/images/diamond.jpg', // ダイヤモンドに関連する画像のURLを追加
+                countries: [
+                    { name: 'ロシア', percentage: '29.1%' },
+                    { name: 'ボツワナ', percentage: '15.8%' },
+                    { name: 'カナダ', percentage: '12.2%' }
+                ],
+                info: {
+                    宝飾市場: 'ダイヤモンドは宝飾品としての需要が高く、品質の良いダイヤモンドを生産する国々が上位にランクインしています。ロシアは世界最大のダイヤモンド生産国として、高品質な石を供給しています。ボツワナはダイヤモンドの採掘と管理において先進的な取り組みを行っており、持続可能な生産を実現しています。カナダも環境に配慮した採掘方法で高品質なダイヤモンドを提供しています。',
+                    採掘倫理: '倫理的な採掘と透明な供給チェーンの確立が求められており、上位生産国はこれに積極的に対応しています。'
+                }
+            },
+            {
+                product: 'ウラン鉱の生産統計',
+                image: 'https://example.com/images/uranium.jpg', // ウラン鉱に関連する画像のURLを追加
+                countries: [
+                    { name: 'カザフスタン', percentage: '45.9%' },
+                    { name: 'ナミビア', percentage: '12.1%' },
+                    { name: 'カナダ', percentage: '9.8%' }
+                ],
+                info: {
+                    原子力発電: 'ウラン鉱は原子力発電の燃料として重要です。カザフスタンは豊富なウラン資源を活用し、世界最大のウラン生産国として原子力市場に貢献しています。ナミビアも安定した生産体制を整え、国際市場でのシェアを拡大しています。カナダは環境に配慮した採掘方法と高度な技術でウランを生産しています。',
+                    安全管理: 'ウランの採掘と輸送には高度な安全管理が求められており、生産国は厳格な規制と技術を用いて安全を確保しています。'
+                }
+            },
+            {
+                product: 'ニッケル鉱の生産統計',
+                image: 'https://media.discordapp.net/attachments/750020958844092539/1314206972542844958/IMG_5023.webp?ex=6752ee1f&is=67519c9f&hm=68d0e6440f8351a32b8765904fb97bf4aaf94353e0fe4315a53b79e91fca068e&=&format=webp&width=720&height=432', // ニッケル鉱に関連する画像のURLを追加
+                countries: [
+                    { name: 'インドネシア', percentage: '32.7%' },
+                    { name: 'フィリピン', percentage: '12.4%' },
+                    { name: 'ロシア', percentage: '10.7%' }
+                ],
+                info: {
+                    スチール産業: 'ニッケルはステンレス鋼の製造に不可欠な素材であり、グローバルなスチール産業を支えています。インドネシアは豊富なニッケル資源を活用し、世界市場での重要な供給源となっています。フィリピンも高品質なニッケル鉱石を生産し、国際市場に供給しています。ロシアは先進的な採掘技術を駆使してニッケルの生産を行っています。',
+                    市場需要: '電気自動車や再生可能エネルギー技術の発展により、ニッケルの需要が急増しています。主要生産国はこれに対応するため生産体制を強化しています。'
+                }
+            },
+            {
+                product: 'タングステン鉱の生産統計',
+                image: 'https://example.com/images/tungsten.jpg', // タングステン鉱に関連する画像のURLを追加
+                countries: [
+                    { name: '中国', percentage: '82.3%' },
+                    { name: 'ベトナム', percentage: '5.4%' }
+                ],
+                info: {
+                    工業用途: 'タングステンは高硬度と高融点を持ち、工具や軍事用途、電気機器など多岐にわたる工業用途で使用されます。中国は圧倒的な生産量を誇り、世界市場において支配的な地位を占めています。ベトナムも生産量を増加させつつあり、特定の工業分野での需要を満たしています。',
+                    供給安定性: 'タングステンの供給は限られた国々に依存しているため、主要生産国は供給の安定性を維持するために国際的な関係を重視しています。'
+                }
+            },
+            {
+                product: 'プラチナの生産統計',
+                image: 'https://media.discordapp.net/attachments/750020958844092539/1314206972249378847/IMG_5022.webp?ex=6752ee1e&is=67519c9e&hm=4fe3910ba30d1600ca5ac71b2f046891b7cee00852a21afca5642b5358247340&=&format=webp&width=720&height=432', // プラチナに関連する画像のURLを追加
+                countries: [
+                    { name: '南アフリカ共和国', percentage: '70%' },
+                    { name: 'ロシア', percentage: '20%' },
+                    { name: 'ジンバブエ', percentage: '10%' }
+                ],
+                info: {
+                    市場影響: '南アフリカ共和国は世界最大のプラチナ生産国として、産業および宝飾市場に大きな影響を与えています。ロシアとジンバブエも重要な生産国として市場での地位を確立しています。',
+                    採掘地域: '南アフリカ共和国のマンゴメラ地域、ロシアのウラル地域、ジンバブエのビショウントン鉱山が主要な採掘地域です。これらの地域は豊富なプラチナ資源と高度な採掘技術を備えています。'
+                }
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+        const resultDiv = document.getElementById('result');
+
+        // To keep track of selected options per section
+        let selectedOptions = {};
+
+        // Utility function to shuffle an array (Fisher-Yates Shuffle)
+        function shuffleArray(array) {
+            let shuffled = array.slice(); // Create a copy
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Initialize the quiz
+        function initQuiz() {
+            quizContainer.innerHTML = '';
+            selectedOptions = {};
+
+            quizData.forEach((item, index) => {
+                const section = document.createElement('div');
+                section.classList.add('quiz-section');
+                section.dataset.productIndex = index;
+
+                const title = document.createElement('h2');
+                title.textContent = item.product;
+                section.appendChild(title);
+
+                // 画像を追加（初期状態では非表示）
+                if (item.image) {
+                    const img = document.createElement('img');
+                    img.src = item.image;
+                    img.alt = `${item.product} の画像`;
+                    img.style.display = 'none'; // 初期状態で非表示
+                    section.appendChild(img);
+                }
+
+                const blanks = document.createElement('div');
+                blanks.classList.add('blanks');
+
+                for (let i = 0; i < item.countries.length; i++) {
+                    const blank = document.createElement('div');
+                    blank.classList.add('blank');
+                    blank.dataset.blankIndex = i;
+
+                    const number = document.createElement('span');
+                    number.classList.add('rank-number');
+                    number.textContent = (i + 1) + '.';
+                    blank.appendChild(number);
+
+                    const dropZone = document.createElement('div');
+                    dropZone.classList.add('drop-zone');
+                    dropZone.dataset.productIndex = index;
+                    dropZone.dataset.position = i;
+                    dropZone.addEventListener('click', () => handleBlankClick(index, i));
+                    blank.appendChild(dropZone);
+
+                    // Add percentage next to drop-zone if available
+                    if (item.countries[i].percentage) {
+                        const percentageSpan = document.createElement('span');
+                        percentageSpan.classList.add('percentage');
+                        percentageSpan.textContent = `(${item.countries[i].percentage})`;
+                        blank.appendChild(percentageSpan);
+                    }
+
+                    blanks.appendChild(blank);
+                }
+
+                section.appendChild(blanks);
+
+                // Create options for this section
+                const optionsContainer = document.createElement('div');
+                optionsContainer.classList.add('options');
+
+                // Shuffle the countries for random option order
+                const shuffledCountries = shuffleArray(item.countries);
+
+                shuffledCountries.forEach(countryObj => {
+                    const button = document.createElement('button');
+                    button.classList.add('option');
+                    button.textContent = countryObj.name; // Display only the country name
+                    button.dataset.country = countryObj.name; // Use name for logic
+                    button.addEventListener('click', () => handleOptionClick(index, countryObj.name, button));
+                    optionsContainer.appendChild(button);
+                });
+
+                section.appendChild(optionsContainer);
+
+                // Create buttons container for this section
+                const buttonsContainer = document.createElement('div');
+                buttonsContainer.classList.add('buttons');
+
+                // Create "解答する" button
+                const checkButton = document.createElement('button');
+                checkButton.id = `check-answer-${index}`;
+                checkButton.textContent = '解答する';
+                checkButton.addEventListener('click', () => checkAnswersSection(index));
+                buttonsContainer.appendChild(checkButton);
+
+                // Create "やり直し" button
+                const resetButton = document.createElement('button');
+                resetButton.id = `reset-${index}`;
+                resetButton.textContent = 'やり直し';
+                resetButton.addEventListener('click', () => resetSection(index));
+                buttonsContainer.appendChild(resetButton);
+
+                section.appendChild(buttonsContainer);
+
+                // Create additional info container
+                const infoContainer = document.createElement('div');
+                infoContainer.classList.add('additional-info');
+                infoContainer.id = `info-${index}`;
+                const infoTitle = document.createElement('h3');
+                infoTitle.textContent = `${item.product} の詳細情報`;
+                infoContainer.appendChild(infoTitle);
+
+                const infoList = document.createElement('ul');
+                for (let key in item.info) {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<strong>${key}:</strong> ${item.info[key]}`;
+                    infoList.appendChild(listItem);
+                }
+                infoContainer.appendChild(infoList);
+                section.appendChild(infoContainer);
+
+                quizContainer.appendChild(section);
+            });
+
+            resultDiv.textContent = '';
+        }
+
+        // Handle option click for a specific section
+        function handleOptionClick(sectionIndex, countryName, button) {
+            const section = document.querySelector(`.quiz-section[data-product-index="${sectionIndex}"]`);
+            const dropZones = section.querySelectorAll('.drop-zone');
+
+            // Check if country is already selected in this section
+            for (let key in selectedOptions) {
+                const [prodIndex, pos] = key.split('-').map(Number);
+                if (prodIndex === sectionIndex && selectedOptions[key] === countryName) {
+                    // Deselect the country
+                    const dropZone = document.querySelector(`.drop-zone[data-product-index="${sectionIndex}"][data-position="${pos}"]`);
+                    dropZone.textContent = '';
+                    dropZone.classList.remove('filled');
+                    delete selectedOptions[key];
+                    button.classList.remove('selected');
+                    return;
+                }
+            }
+
+            // Assign to the first empty drop zone
+            for (let i = 0; i < dropZones.length; i++) {
+                const dropZone = dropZones[i];
+                if (!dropZone.classList.contains('filled')) {
+                    dropZone.textContent = countryName;
+                    dropZone.classList.add('filled');
+                    button.classList.add('selected');
+                    selectedOptions[`${sectionIndex}-${i}`] = countryName;
+                    return;
+                }
+            }
+
+            // If all drop zones are filled, allow replacing by clicking
+            alert('すべての順位に国が選択されています。順位をクリックして変更してください。');
+        }
+
+        // Handle blank click to remove assigned country
+        function handleBlankClick(productIndex, position) {
+            const dropZone = document.querySelector(`.drop-zone[data-product-index="${productIndex}"][data-position="${position}"]`);
+            if (dropZone.classList.contains('filled')) {
+                const country = dropZone.textContent;
+                dropZone.textContent = '';
+                dropZone.classList.remove('filled');
+                // Remove any existing correct answer span
+                const blank = dropZone.parentElement;
+                const correctAnswerSpan = blank.querySelector('.correct-answer');
+                if (correctAnswerSpan) {
+                    correctAnswerSpan.remove();
+                }
+                // Deselect the option button
+                const section = document.querySelector(`.quiz-section[data-product-index="${productIndex}"]`);
+                const optionButton = Array.from(section.querySelectorAll('.option')).find(btn => btn.dataset.country === country);
+                if (optionButton) {
+                    optionButton.classList.remove('selected');
+                }
+                // Remove from selectedOptions
+                delete selectedOptions[`${productIndex}-${position}`];
+            }
+        }
+
+        // Check answers for a specific section
+        function checkAnswersSection(sectionIndex) {
+            const item = quizData[sectionIndex];
+            const section = document.querySelector(`.quiz-section[data-product-index="${sectionIndex}"]`);
+            let correctCount = 0;
+            let total = item.countries.length;
+            let sectionCorrect = true;
+
+            for (let i = 0; i < item.countries.length; i++) {
+                const dropZone = section.querySelector(`.drop-zone[data-position="${i}"]`);
+                const userAnswer = dropZone.textContent.trim();
+                const correctAnswer = item.countries[i].name;
+
+                // Remove any existing correct answer span
+                const blank = dropZone.parentElement;
+                const existingCorrectSpan = blank.querySelector('.correct-answer');
+                if (existingCorrectSpan) {
+                    existingCorrectSpan.remove();
+                }
+
+                if (userAnswer === correctAnswer) {
+                    dropZone.style.borderColor = '#4CAF50';
+                    dropZone.style.backgroundColor = '#e8f5e9';
+                    correctCount++;
+                } else {
+                    dropZone.style.borderColor = '#f44336';
+                    dropZone.style.backgroundColor = '#ffebee';
+                    sectionCorrect = false;
+
+                    // Append correct answer inside drop-zone for better visibility
+                    const correctSpan = document.createElement('span');
+                    correctSpan.classList.add('correct-answer');
+                    correctSpan.textContent = `正解: ${correctAnswer}`;
+                    dropZone.appendChild(correctSpan);
+                }
+            }
+
+            // Show additional info and image if section is fully correct
+            const infoContainer = document.getElementById(`info-${sectionIndex}`);
+            const img = section.querySelector('img');
+            if (sectionCorrect && correctCount === total) {
+                infoContainer.style.display = 'block';
+
+                if (img) {
+                    img.style.display = 'block'; // 画像を表示
+                }
+            } else {
+                infoContainer.style.display = 'none';
+
+                if (img) {
+                    img.style.display = 'none'; // 画像を非表示
+                }
+            }
+
+            // Display result for this section
+            let resultSection = section.querySelector('.result-section');
+            if (!resultSection) {
+                resultSection = document.createElement('div');
+                resultSection.classList.add('result-section');
+                resultSection.classList.add('result');
+                section.appendChild(resultSection);
+            }
+            resultSection.textContent = `正解数: ${correctCount} / ${total}`;
+        }
+
+        // Reset a specific section
+        function resetSection(sectionIndex) {
+            const section = document.querySelector(`.quiz-section[data-product-index="${sectionIndex}"]`);
+            const dropZones = section.querySelectorAll('.drop-zone');
+            const optionButtons = section.querySelectorAll('.option');
+            const infoContainer = document.getElementById(`info-${sectionIndex}`);
+            const resultSection = section.querySelector('.result-section');
+            const img = section.querySelector('img');
+
+            // Clear all drop zones and remove correct-answer spans
+            dropZones.forEach((dropZone, pos) => {
+                // Remove any existing correct answer span regardless of filled state
+                const blank = dropZone.parentElement;
+                const correctAnswerSpan = blank.querySelector('.correct-answer');
+                if (correctAnswerSpan) {
+                    correctAnswerSpan.remove();
+                }
+
+                if (dropZone.classList.contains('filled')) {
+                    const country = dropZone.textContent;
+                    dropZone.textContent = '';
+                    dropZone.classList.remove('filled');
+
+                    // Deselect the option button
+                    const optionButton = Array.from(optionButtons).find(btn => btn.dataset.country === country);
+                    if (optionButton) {
+                        optionButton.classList.remove('selected');
+                    }
+
+                    // Remove from selectedOptions
+                    delete selectedOptions[`${sectionIndex}-${pos}`];
+                }
+
+                // Reset styles
+                dropZone.style.borderColor = '#ccc';
+                dropZone.style.backgroundColor = '';
+            });
+
+            // Reset result section
+            if (resultSection) {
+                resultSection.textContent = '';
+            }
+
+            // Hide additional info and image
+            if (infoContainer) {
+                infoContainer.style.display = 'none';
+            }
+            if (img) {
+                img.style.display = 'none';
+            }
+        }
+
+        // Initialize the quiz on page load
+        window.onload = initQuiz;
+    </script>
+
+</body>
+</html>
